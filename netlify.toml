@@ -1,0 +1,12 @@
+# Configuración de Netlify para UrbanCaps (Next.js)
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# El plugin oficial de Next.js habilita SSR, server actions y middleware.
+# Netlify lo instala automáticamente al detectar Next.js; se deja explícito.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

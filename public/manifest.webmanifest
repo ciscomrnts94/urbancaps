@@ -1,0 +1,22 @@
+{
+  "name": "UrbanCaps · Moda y estilo premium",
+  "short_name": "UrbanCaps",
+  "description": "Tienda online de moda urbana y accesorios premium. Envíos a toda Colombia.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#16161a",
+  "lang": "es-CO",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Buscar", "url": "/buscar" },
+    { "name": "Carrito", "url": "/carrito" },
+    { "name": "Mi cuenta", "url": "/cuenta" }
+  ]
+}

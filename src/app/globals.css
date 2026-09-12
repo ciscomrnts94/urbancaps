@@ -1,0 +1,218 @@
+@import "tailwindcss";
+
+/* ============================================================
+   URBANCAPS · Sistema de diseño premium (Blanco + Dorado)
+   Mobile-first · Lujo minimalista
+   ============================================================ */
+
+:root {
+  /* Neutros */
+  --bg: #ffffff;
+  --bg-soft: #faf9f6;
+  --bg-elevated: #ffffff;
+  --ink: #111114;
+  --ink-soft: #2a2a2e;
+  --muted: #6b6b73;
+  --muted-soft: #9a9aa2;
+  --line: #ececec;
+  --line-strong: #e0e0e0;
+
+  /* Dorado elegante (no amarillo fuerte) */
+  --gold: #c6a15b;
+  --gold-strong: #ab8642;
+  --gold-soft: #e6d3a8;
+  --gold-tint: #f7f1e3;
+
+  /* Estado */
+  --danger: #c0392b;
+  --success: #2e7d5b;
+  --warning: #c98a00;
+
+  /* Superficies oscuras (footer, elementos premium) */
+  --dark: #16161a;
+  --dark-soft: #232329;
+
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 22px;
+  --shadow-sm: 0 1px 2px rgba(17, 17, 20, 0.05);
+  --shadow: 0 6px 24px rgba(17, 17, 20, 0.08);
+  --shadow-lg: 0 18px 48px rgba(17, 17, 20, 0.14);
+
+  --header-h: 60px;
+  --bottomnav-h: 64px;
+  --maxw: 1200px;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-muted-soft: var(--muted-soft);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-gold: var(--gold);
+  --color-gold-strong: var(--gold-strong);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-tint: var(--gold-tint);
+  --color-dark: var(--dark);
+  --color-dark-soft: var(--dark-soft);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
+
+  --radius: 14px;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  height: 100%;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none;
+}
+
+/* Tipografía display de lujo */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Utilidades */
+.container-x {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+@media (min-width: 768px) {
+  .container-x { padding-inline: 32px; }
+}
+
+.hairline { border-color: var(--line); }
+
+/* Texto pequeño en mayúsculas (etiquetas premium) */
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gold-strong);
+}
+
+/* Botón dorado principal */
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-strong));
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 8px 20px rgba(171, 134, 66, 0.28);
+}
+.btn-gold:hover { filter: brightness(1.04); box-shadow: 0 10px 26px rgba(171, 134, 66, 0.36); }
+.btn-gold:active { transform: translateY(1px) scale(0.995); }
+.btn-gold:disabled { opacity: 0.5; filter: grayscale(0.4); box-shadow: none; cursor: not-allowed; }
+
+.btn-dark {
+  background: var(--ink);
+  color: #fff;
+  font-weight: 600;
+  border-radius: var(--radius);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.btn-dark:hover { background: #000; }
+.btn-dark:active { transform: translateY(1px) scale(0.995); }
+
+.btn-outline {
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  font-weight: 600;
+  border-radius: var(--radius);
+  transition: background 0.15s ease, color 0.15s ease;
+  background: transparent;
+}
+.btn-outline:hover { background: var(--ink); color: #fff; }
+
+/* Chips seleccionables (colores / tallas) */
+.chip {
+  border: 1.5px solid var(--line-strong);
+  border-radius: 10px;
+  transition: all 0.15s ease;
+  background: #fff;
+}
+.chip:hover { border-color: var(--gold); }
+.chip[data-active="true"] {
+  border-color: var(--gold-strong);
+  background: var(--gold-tint);
+  box-shadow: inset 0 0 0 1px var(--gold-strong);
+}
+.chip:disabled {
+  opacity: 0.4;
+  text-decoration: line-through;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+/* Tarjeta */
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+/* Badge */
+.badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.badge-sale { background: var(--danger); color: #fff; }
+.badge-new { background: var(--ink); color: #fff; }
+.badge-gold { background: var(--gold-tint); color: var(--gold-strong); }
+.badge-soldout { background: #f0f0f0; color: var(--muted); }
+
+/* Scrollbars horizontales limpias */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Animaciones */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #f7f7f7 37%, #f0f0f0 63%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* Safe areas para PWA (notch iPhone) */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pt-safe { padding-top: env(safe-area-inset-top); }
