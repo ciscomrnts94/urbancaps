@@ -31,6 +31,7 @@ export default function BottomNav() {
               href={href}
               className="flex flex-col items-center justify-center gap-1 relative"
             >
+              {active && <span className="absolute top-0 w-8 h-1 rounded-full" style={{ background: "linear-gradient(90deg, var(--gold), var(--gold-strong))" }} />}
               <div className="relative">
                 <Icon
                   size={22}

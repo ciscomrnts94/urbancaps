@@ -3,32 +3,39 @@ import { ArrowRight } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="container-x pt-4 md:pt-8">
-      <div className="relative overflow-hidden rounded-[var(--radius-lg)] bg-dark text-white min-h-[440px] md:min-h-[520px] flex items-end">
+    <section className="px-4 md:px-8 pt-3 md:pt-6">
+      <div className="relative overflow-hidden rounded-[26px] bg-dark text-white min-h-[72vh] md:min-h-[62vh] flex items-end animate-scale-in">
         {/* Fondo */}
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-70"
-          style={{ backgroundImage: "url(https://picsum.photos/seed/urbancaps-hero/1400/900)" }}
+          className="absolute inset-0 bg-cover bg-center scale-105"
+          style={{ backgroundImage: "url(https://picsum.photos/seed/urbancaps-hero2/1200/1500)" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/10" />
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/40 to-transparent" />
 
-        <div className="relative p-7 md:p-14 max-w-xl animate-fade-up">
-          <p className="eyebrow text-gold-soft mb-3">Nueva colección · 2026</p>
-          <h1 className="font-display text-4xl md:text-6xl font-700 leading-[1.05]">
-            Estilo urbano,
+        {/* Etiqueta superior */}
+        <div className="absolute top-5 left-5">
+          <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase font-semibold text-white/90 bg-white/10 badge-float rounded-full px-3 py-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-gold" /> Nueva colección · 2026
+          </span>
+        </div>
+
+        <div className="relative p-6 md:p-12 pb-8 w-full">
+          <h1 className="font-display text-[42px] leading-[0.98] md:text-6xl font-700">
+            Descubre tu
             <br />
-            <span className="text-gold">acabado premium</span>
+            <span className="text-gold">próximo estilo</span>
           </h1>
-          <p className="mt-4 text-white/75 text-sm md:text-base max-w-md">
-            Gorras, ropa y accesorios seleccionados. Envíos a toda Colombia y pago contra entrega.
+          <p className="mt-3.5 text-white/75 text-[15px] max-w-sm leading-relaxed">
+            Gorras, ropa y accesorios premium. Envíos a toda Colombia y pago contra entrega.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Link href="/categorias" className="btn-gold px-6 py-3.5 text-sm inline-flex items-center gap-2">
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/categorias" className="btn-gold btn-pill px-7 py-3.5 text-sm inline-flex items-center gap-2">
               Comprar ahora <ArrowRight size={16} />
             </Link>
             <Link
               href="/categoria/gorras"
-              className="px-6 py-3.5 text-sm font-semibold rounded-[var(--radius)] border border-white/40 text-white hover:bg-white hover:text-ink transition-colors"
+              className="btn-pill px-6 py-3.5 text-sm font-semibold border border-white/40 text-white hover:bg-white hover:text-ink transition-colors backdrop-blur-sm"
             >
               Ver gorras
             </Link>
@@ -36,17 +43,17 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Franja de beneficios */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+      {/* Franja de beneficios (scroll horizontal en móvil) */}
+      <div className="flex md:grid md:grid-cols-4 gap-2.5 mt-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
         {[
-          { t: "Envío nacional", s: "Gratis desde $200.000" },
+          { t: "Envío gratis", s: "Desde $200.000" },
           { t: "Pago seguro", s: "Wompi · PSE · Nequi" },
-          { t: "Contra entrega", s: "En ciudades principales" },
+          { t: "Contra entrega", s: "Ciudades principales" },
           { t: "Cambios fáciles", s: "Hasta 15 días" },
         ].map((b) => (
-          <div key={b.t} className="card px-4 py-3 text-center md:text-left">
-            <p className="text-sm font-semibold">{b.t}</p>
-            <p className="text-xs text-muted">{b.s}</p>
+          <div key={b.t} className="shrink-0 min-w-[46%] md:min-w-0 rounded-2xl bg-bg-warm border border-line px-4 py-3">
+            <p className="text-[13px] font-600">{b.t}</p>
+            <p className="text-[11px] text-muted mt-0.5">{b.s}</p>
           </div>
         ))}
       </div>

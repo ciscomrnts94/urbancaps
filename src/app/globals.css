@@ -9,6 +9,8 @@
   /* Neutros */
   --bg: #ffffff;
   --bg-soft: #faf9f6;
+  --bg-warm: #fbf8f1;
+  --bg-gray: #f3f3f1;
   --bg-elevated: #ffffff;
   --ink: #111114;
   --ink-soft: #2a2a2e;
@@ -47,6 +49,8 @@
 @theme inline {
   --color-bg: var(--bg);
   --color-bg-soft: var(--bg-soft);
+  --color-bg-warm: var(--bg-warm);
+  --color-bg-gray: var(--bg-gray);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-muted: var(--muted);
@@ -216,3 +220,80 @@ body {
 /* Safe areas para PWA (notch iPhone) */
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 .pt-safe { padding-top: env(safe-area-inset-top); }
+
+/* ============================================================
+   Rediseño premium · utilidades tipo app nativa
+   ============================================================ */
+
+/* Píxel de color (swatch) para variantes en tarjetas */
+.swatch {
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12), inset 0 0 0 1.5px #fff;
+  display: inline-block;
+}
+
+/* Botón dorado tipo pill (redondeo completo, más “app”) */
+.btn-pill {
+  border-radius: 999px !important;
+}
+
+/* Chip de disponibilidad */
+.stock-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+.dot { width: 6px; height: 6px; border-radius: 999px; display: inline-block; }
+
+/* Badge premium translúcido sobre imagen */
+.badge-float {
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+.badge-glass {
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--ink);
+}
+
+/* Título de sección con línea dorada */
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Botón circular de acción (favorito, etc.) tipo app */
+.icon-btn {
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(17, 17, 20, 0.12);
+  transition: transform 0.15s ease;
+}
+.icon-btn:active { transform: scale(0.92); }
+
+/* Presión táctil sutil en tarjetas */
+.press { transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1); }
+.press:active { transform: scale(0.975); }
+
+/* Realce dorado para elementos premium */
+.ring-gold-soft { box-shadow: 0 0 0 1px var(--gold-soft); }
+
+/* Degradado de aparición para carruseles (borde derecho) */
+.fade-right {
+  -webkit-mask-image: linear-gradient(to right, #000 88%, transparent);
+  mask-image: linear-gradient(to right, #000 88%, transparent);
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in { animation: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
