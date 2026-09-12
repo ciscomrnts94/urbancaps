@@ -11,6 +11,8 @@ import { useAuth } from "@/components/auth/auth-provider";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import type { Address } from "@/lib/auth/types";
 import { useOrders, generateOrderId } from "@/lib/orders-store";
+import { createOrder } from "@/app/orders-actions";
+import { Loader2, AlertCircle } from "lucide-react";
 import { formatCOP } from "@/lib/format";
 import { DEPARTMENTS, citiesFor } from "@/lib/colombia";
 import { SHIPPING_METHODS, shippingCost } from "@/lib/pricing";
@@ -39,6 +41,8 @@ export default function CheckoutPage() {
   const [shippingId, setShippingId] = useState(SHIPPING_METHODS[0].id);
   const [paymentId, setPaymentId] = useState(ACTIVE_PAYMENTS[0].id);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [placing, setPlacing] = useState(false);
+  const [orderError, setOrderError] = useState("");
 
   const shippingMethod = SHIPPING_METHODS.find((m) => m.id === shippingId)!;
   const paymentMethod = ACTIVE_PAYMENTS.find((m) => m.id === paymentId)!;
@@ -106,19 +110,42 @@ export default function CheckoutPage() {
     return Object.keys(e).length === 0;
   }
 
-  function placeOrder() {
+  async function placeOrder() {
+    setOrderError("");
     if (!validate()) {
       document.querySelector("[data-error='true']")?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     const id = generateOrderId();
-    const order = {
+    setPlacing(true);
+
+    // Crear pedido en Supabase (valida y descuenta stock de forma atómica)
+    const res = await createOrder({
+      orderId: id,
+      items: lines.map((l) => ({
+        variant_id: l.variantId, product_id: l.productId, name: l.name,
+        color: l.color, size: l.size, unit_price: l.unitPrice, quantity: l.quantity,
+      })),
+      subtotal, discount, shipping, total,
+      couponCode: coupon?.code ?? null,
+      paymentMethod: paymentMethod.label, shippingMethod: shippingMethod.label,
+      contact: info,
+    });
+
+    if (!res.ok) {
+      setPlacing(false);
+      setOrderError(res.error ?? "No pudimos procesar tu pedido.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    // Guardar también en el historial local para la confirmación inmediata
+    addOrder({
       id, createdAt: new Date().toISOString(), lines, info,
       subtotal, discount, shipping, total,
       shippingLabel: shippingMethod.label, paymentLabel: paymentMethod.label,
       couponCode: coupon?.code, status: "pendiente" as const,
-    };
-    addOrder(order);
+    });
 
     // Mensaje de WhatsApp con el pedido (flujo de coordinación con la tienda)
     if (paymentId === "whatsapp" || paymentId === "contraentrega") {
@@ -312,8 +339,13 @@ export default function CheckoutPage() {
               <div className="flex justify-between text-lg font-700 pt-2 border-t border-line mt-2"><span>Total</span><span>{formatCOP(total)}</span></div>
             </div>
 
-            <button onClick={placeOrder} disabled={!canOrder} className="btn-gold w-full py-3.5 text-sm mt-5 inline-flex items-center justify-center gap-2">
-              <Check size={17} /> Confirmar pedido
+            {orderError && (
+              <div className="mt-4 rounded-lg border border-danger/30 bg-danger/5 text-danger text-xs px-3 py-2.5 flex gap-2">
+                <AlertCircle size={15} className="shrink-0" /> {orderError}
+              </div>
+            )}
+            <button onClick={placeOrder} disabled={!canOrder || placing} className="btn-gold w-full py-3.5 text-sm mt-5 inline-flex items-center justify-center gap-2 disabled:opacity-70">
+              {placing ? (<><Loader2 size={17} className="animate-spin" /> Procesando…</>) : (<><Check size={17} /> Confirmar pedido</>)}
             </button>
             <p className="text-[11px] text-muted-soft text-center mt-3">
               Al confirmar aceptas nuestros términos y política de privacidad.

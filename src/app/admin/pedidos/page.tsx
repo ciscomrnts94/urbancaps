@@ -1,56 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import { Package, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
-import { useOrders, ORDER_STATUSES, ORDER_STATUS_LABEL } from "@/lib/orders-store";
-import { useHydrated } from "@/components/cart/cart-provider";
+import { useEffect, useState } from "react";
+import { Package, ChevronDown, ChevronRight, Truck } from "lucide-react";
+import { getAdminOrders, setOrderStatusAction, setTrackingAction } from "@/app/orders-actions";
+import { ORDER_STATUSES, ORDER_STATUS_LABEL } from "@/lib/orders-store";
 import { formatCOP, formatDateCO } from "@/lib/format";
-import { buildDemoOrders } from "@/lib/demo-orders";
 import type { OrderStatus } from "@/lib/types";
 
 const STATUS_TONE: Record<string, string> = {
-  pendiente: "#fff4e0|#9a6b00",
-  pago_pendiente: "#fff4e0|#9a6b00",
-  pagado: "#e8f5ee|#2e7d5b",
-  preparando: "#eef2ff|#3949ab",
-  listo_envio: "#eef2ff|#3949ab",
-  enviado: "#e7f3fb|#0369a1",
-  entregado: "#e8f5ee|#2e7d5b",
-  cancelado: "#fdeaea|#c0392b",
-  reembolsado: "#f0f0f0|#6b6b73",
+  pendiente: "#fff4e0|#9a6b00", pago_pendiente: "#fff4e0|#9a6b00", pagado: "#e8f5ee|#2e7d5b",
+  preparando: "#eef2ff|#3949ab", listo_envio: "#eef2ff|#3949ab", enviado: "#e7f3fb|#0369a1",
+  entregado: "#e8f5ee|#2e7d5b", cancelado: "#fdeaea|#c0392b", reembolsado: "#f0f0f0|#6b6b73",
 };
 
-function StatusPill({ status }: { status: OrderStatus }) {
+function StatusPill({ status }: { status: string }) {
   const [bg, fg] = (STATUS_TONE[status] ?? "#f0f0f0|#6b6b73").split("|");
-  return <span className="badge" style={{ background: bg, color: fg }}>{ORDER_STATUS_LABEL[status]}</span>;
+  return <span className="badge" style={{ background: bg, color: fg }}>{ORDER_STATUS_LABEL[status as OrderStatus] ?? status}</span>;
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function AdminPedidos() {
-  const hydrated = useHydrated();
-  const orders = useOrders((s) => s.orders);
-  const addOrder = useOrders((s) => s.addOrder);
-  const setStatus = useOrders((s) => s.setStatus);
+  const [orders, setOrders] = useState<any[] | null>(null);
   const [open, setOpen] = useState<string | null>(null);
 
-  function seed() {
-    buildDemoOrders().forEach(addOrder);
+  async function load() {
+    try { setOrders(await getAdminOrders()); } catch { setOrders([]); }
+  }
+  useEffect(() => { load(); }, []);
+
+  async function changeStatus(id: string, status: string) {
+    setOrders((os) => os?.map((o) => (o.id === id ? { ...o, status } : o)) ?? null);
+    await setOrderStatusAction(id, status);
+  }
+  async function saveTracking(id: string, carrier: string, number: string) {
+    setOrders((os) => os?.map((o) => (o.id === id ? { ...o, trackingCarrier: carrier, trackingNumber: number } : o)) ?? null);
+    await setTrackingAction(id, carrier, number);
   }
 
   return (
     <div className="max-w-5xl">
-      <div className="flex items-center justify-between gap-3 mb-6">
-        <div>
-          <h1 className="font-display text-2xl md:text-3xl font-700">Pedidos</h1>
-          <p className="text-sm text-muted">{hydrated ? orders.length : 0} pedidos</p>
-        </div>
-        {hydrated && orders.length === 0 && (
-          <button onClick={seed} className="btn-outline px-4 py-2.5 text-sm inline-flex items-center gap-2">
-            <Sparkles size={16} /> Generar ejemplos
-          </button>
-        )}
+      <div className="mb-6">
+        <h1 className="font-display text-2xl md:text-3xl font-700">Pedidos</h1>
+        <p className="text-sm text-muted">{orders ? orders.length : "…"} pedidos</p>
       </div>
 
-      {!hydrated ? null : orders.length === 0 ? (
+      {orders === null ? (
+        <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton h-16 rounded-lg" />)}</div>
+      ) : orders.length === 0 ? (
         <div className="card p-10 text-center">
           <Package size={30} className="text-muted-soft mx-auto mb-3" />
           <p className="text-muted">Aún no hay pedidos. Cuando un cliente compre, aparecerán aquí.</p>
@@ -79,7 +75,7 @@ export default function AdminPedidos() {
                     <div>
                       <p className="eyebrow mb-2">Productos</p>
                       <div className="space-y-2">
-                        {o.lines.map((l) => (
+                        {o.lines.map((l: any) => (
                           <div key={l.key} className="flex justify-between text-sm">
                             <span>{l.name} <span className="text-muted">({[l.color, l.size].filter(Boolean).join("/")}) ×{l.quantity}</span></span>
                             <span>{formatCOP(l.unitPrice * l.quantity)}</span>
@@ -104,10 +100,22 @@ export default function AdminPedidos() {
                       </div>
                       <div className="mt-4">
                         <label className="eyebrow block mb-1.5">Cambiar estado</label>
-                        <select value={o.status} onChange={(e) => setStatus(o.id, e.target.value as OrderStatus)}
+                        <select value={o.status} onChange={(e) => changeStatus(o.id, e.target.value)}
                           className="w-full border border-line-strong rounded-lg px-3 h-10 text-sm bg-bg outline-none focus:border-gold">
                           {ORDER_STATUSES.map((s) => <option key={s} value={s}>{ORDER_STATUS_LABEL[s]}</option>)}
                         </select>
+                      </div>
+                      <div className="mt-3">
+                        <label className="eyebrow block mb-1.5 flex items-center gap-1"><Truck size={12} /> Guía de envío</label>
+                        <div className="flex gap-2">
+                          <input defaultValue={o.trackingCarrier ?? ""} placeholder="Transportadora" id={`c-${o.id}`} className="flex-1 border border-line-strong rounded-lg px-2 h-9 text-sm outline-none focus:border-gold" />
+                          <input defaultValue={o.trackingNumber ?? ""} placeholder="N° guía" id={`n-${o.id}`} className="w-28 border border-line-strong rounded-lg px-2 h-9 text-sm outline-none focus:border-gold" />
+                          <button onClick={() => {
+                            const c = (document.getElementById(`c-${o.id}`) as HTMLInputElement).value;
+                            const n = (document.getElementById(`n-${o.id}`) as HTMLInputElement).value;
+                            saveTracking(o.id, c, n);
+                          }} className="btn-dark px-3 h-9 text-xs">Guardar</button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -120,3 +128,4 @@ export default function AdminPedidos() {
     </div>
   );
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
