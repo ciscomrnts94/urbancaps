@@ -7,7 +7,7 @@ import { Minus, Plus, Trash2, ShoppingBag, Tag, X } from "lucide-react";
 import { useCart } from "@/lib/cart-store";
 import { useHydrated } from "@/components/cart/cart-provider";
 import { formatCOP } from "@/lib/format";
-import { findCoupon } from "@/lib/pricing";
+import { validateCoupon } from "@/app/coupons-actions";
 import { STORE } from "@/lib/store-config";
 
 export default function CarritoPage() {
@@ -17,17 +17,17 @@ export default function CarritoPage() {
   const discount = useCart((s) => s.discount());
   const [code, setCode] = useState("");
   const [err, setErr] = useState("");
+  const [checking, setChecking] = useState(false);
 
-  function tryCoupon(e: React.FormEvent) {
+  async function tryCoupon(e: React.FormEvent) {
     e.preventDefault();
     setErr("");
-    const found = findCoupon(code);
-    if (!found) { setErr("Cupón no válido."); return; }
-    if (found.minSubtotal && subtotal < found.minSubtotal) {
-      setErr(`Válido en compras desde ${formatCOP(found.minSubtotal)}.`);
-      return;
-    }
-    applyCoupon(found);
+    if (!code.trim()) return;
+    setChecking(true);
+    const res = await validateCoupon(code, subtotal);
+    setChecking(false);
+    if (!res.ok || !res.coupon) { setErr(res.error ?? "Cupón no válido."); return; }
+    applyCoupon(res.coupon);
     setCode("");
   }
 
@@ -100,7 +100,7 @@ export default function CarritoPage() {
                   placeholder="Código de descuento"
                   className="flex-1 border border-line-strong rounded-lg px-3 h-10 text-sm outline-none focus:border-gold uppercase"
                 />
-                <button className="btn-dark px-4 text-sm">Aplicar</button>
+                <button disabled={checking} className="btn-dark px-4 text-sm disabled:opacity-60">{checking ? "…" : "Aplicar"}</button>
               </form>
             )}
             {err && <p className="text-xs text-danger -mt-2 mb-3">{err}</p>}
